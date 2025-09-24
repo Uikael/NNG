@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NairaNoteGuard - Counterfeit Detection</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #11875D 0%, #E5F5EE 100%);
+        }
+        .dropzone {
+            border: 2px dashed #11875D;
+            transition: all 0.3s ease;
+        }
+        .dropzone.active {
+            border-color: #0A5C36;
+            background-color: #E5F5EE;
+        }
+        .gauge {
+            width: 100%;
+            max-width: 300px;
+            font-family: "Roboto", sans-serif;
+            font-size: 32px;
+            color: #11875D;
+        }
+        .gauge__body {
+            width: 100%;
+            height: 0;
+            padding-bottom: 50%;
+            position: relative;
+            border-top-left-radius: 100% 200%;
+            border-top-right-radius: 100% 200%;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+        .gauge__fill {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #11875D;
+            transform-origin: center top;
+            transform: rotate(0.5turn);
+            transition: transform 0.5s ease-out;
+        }
+        .gauge__cover {
+            width: 75%;
+            height: 150%;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 25%;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i data-feather="shield" class="text-green-600"></i>
+                        <span class="ml-2 text-xl font-bold text-green-600">NairaNoteGuard</span>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                    <a href="#" class="border-green-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                    <a href="#how-it-works" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">How It Works</a>
+                    <a href="#upload" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Check Note</a>
+                    <a href="#about" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">About</a>
+                </div>
+                <div class="-mr-2 flex items-center sm:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="sm:hidden hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="#" class="bg-green-50 border-green-500 text-green-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
+                <a href="#how-it-works" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">How It Works</a>
+                <a href="#upload" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Check Note</a>
+                <a href="#about" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-gradient">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 lg:py-24">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+                <div class="lg:col-span-1" data-aos="fade-right">
+                    <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                        Protect Your Money
+                    </h1>
+                    <p class="mt-5 text-xl text-green-100">
+                        NairaNoteGuard uses advanced AI to detect counterfeit Nigerian Naira notes with over 95% accuracy.
+                    </p>
+                    <div class="mt-8">
+                        <a href="#upload" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-green-600 bg-white hover:bg-green-50">
+                            Check Your Note Now
+                            <i data-feather="arrow-right" class="ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-12 lg:mt-0 lg:col-span-1" data-aos="fade-left">
+                    <div class="relative">
+                        <img src="http://static.photos/finance/640x360/1" alt="Naira notes" class="rounded-lg shadow-xl ring-1 ring-black ring-opacity-5">
+                        <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-lg">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-green-100 rounded-full p-3">
+                                    <i data-feather="check-circle" class="text-green-600"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-900">Authentic</p>
+                                    <p class="text-sm text-gray-500">₦1000 Note</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div id="how-it-works" class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-green-600 font-semibold tracking-wide uppercase">Process</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    How NairaNoteGuard Works
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    Our AI-powered system makes counterfeit detection simple and accessible.
+                </p>
+            </div>
+
+            <div class="mt-10">
+                <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
+                    <div class="flex" data-aos="fade-up" data-aos-delay="100">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                                <i data-feather="upload"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Upload Note Image</h3>
+                            <p class="mt-2 text-base text-gray-500">
+                                Simply take a photo or upload an image of your Naira note (₦200, ₦500, or ₦1000).
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex" data-aos="fade-up" data-aos-delay="200">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                                <i data-feather="cpu"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">AI Analysis</h3>
+                            <p class="mt-2 text-base text-gray-500">
+                                Our contrastive learning model compares your note with thousands of genuine samples.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex" data-aos="fade-up" data-aos-delay="300">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                                <i data-feather="shield"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Get Results</h3>
+                            <p class="mt-2 text-base text-gray-500">
+                                Receive an instant authenticity report with visual explanations.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Section -->
+    <div id="upload" class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-green-600 font-semibold tracking-wide uppercase">Detection</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Check Your Naira Note
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    Upload an image of your ₦200, ₦500, or ₦1000 note for authenticity verification.
+                </p>
+            </div>
+
+            <div class="mt-10">
+                <div class="bg-white shadow rounded-lg p-6">
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Upload Note Image</h3>
+                            <p class="mt-1 text-sm text-gray-500">
+                                For best results, place the note on a flat surface with good lighting.
+                            </p>
+                        </div>
+
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dropzone" id="dropzone">
+                            <div class="space-y-1 text-center">
+                                <div class="flex text-sm text-gray-600">
+                                    <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                                        <span>Upload a file</span>
+                                        <input id="file-upload" name="file-upload" type="file" class="sr-only" accept="image/*">
+                                    </label>
+                                    <p class="pl-1">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-gray-500">
+                                    PNG, JPG, JPEG up to 5MB
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="hidden" id="preview-container">
+                            <h3 class="text-lg font-medium text-gray-900">Note Preview</h3>
+                            <div class="mt-2 flex items-center">
+                                <div class="w-32 h-32 bg-gray-100 rounded-md overflow-hidden">
+                                    <img id="preview-image" class="w-full h-full object-contain" src="" alt="Uploaded note preview">
+                                </div>
+                                <div class="ml-4">
+                                    <p id="file-name" class="text-sm font-medium text-gray-900"></p>
+                                    <p id="file-size" class="text-sm text-gray-500"></p>
+                                    <button id="remove-file" class="mt-1 text-sm text-red-600 hover:text-red-500">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hidden" id="denomination-selector">
+                            <h3 class="text-lg font-medium text-gray-900">Select Denomination</h3>
+                            <div class="mt-2 grid grid-cols-3 gap-3">
+                                <button class="denomination-btn bg-green-50 border-green-500 text-green-700 px-4 py-2 border rounded-md font-medium" data-denomination="200">
+                                    ₦200
+                                </button>
+                                <button class="denomination-btn border-gray-300 text-gray-700 px-4 py-2 border rounded-md font-medium" data-denomination="500">
+                                    ₦500
+                                </button>
+                                <button class="denomination-btn border-gray-300 text-gray-700 px-4 py-2 border rounded-md font-medium" data-denomination="1000">
+                                    ₦1000
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="hidden" id="analyze-btn-container">
+                            <button id="analyze-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                Analyze Note
+                                <i data-feather="chevron-right" class="ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section (Initially Hidden) -->
+    <div id="results-section" class="hidden py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-green-600 font-semibold tracking-wide uppercase">Results</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Authenticity Report
+                </p>
+            </div>
+
+            <div class="mt-10">
+                <div class="bg-white shadow rounded-lg p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <div class="flex items-center">
+                                <div id="result-icon" class="flex-shrink-0 h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i data-feather="check-circle" class="text-green-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 id="result-title" class="text-lg font-medium text-gray-900">Likely Genuine</h3>
+                                    <p id="result-subtitle" class="text-sm text-gray-500">High similarity with genuine notes</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-8">
+                                <h4 class="text-sm font-medium text-gray-900">Similarity Score</h4>
+                                <div class="mt-2 flex items-center justify-center">
+                                    <div class="gauge">
+                                        <div class="gauge__body">
+                                            <div class="gauge__fill" id="gauge-fill"></div>
+                                            <div class="gauge__cover" id="gauge-value">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8">
+                                <h4 class="text-sm font-medium text-gray-900">Key Features Checked</h4>
+                                <div class="mt-2 space-y-3">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <i data-feather="check" class="text-green-500"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-gray-700">Security Thread</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <i data-feather="check" class="text-green-500"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-gray-700">Watermark</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <i data-feather="check" class="text-green-500"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-gray-700">Color Shifting Ink</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <i data-feather="check" class="text-green-500"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-gray-700">Microprinting</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="text-sm font-medium text-gray-900">Uploaded Note</h4>
+                                <div class="mt-2">
+                                    <img id="result-image" class="w-full h-auto rounded-md" src="" alt="Analyzed note">
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <h4 class="text-sm font-medium text-gray-900">Embedding Visualization</h4>
+                                <div class="mt-2 bg-gray-50 p-4 rounded-lg">
+                                    <canvas id="embedding-chart" class="w-full h-64"></canvas>
+                                </div>
+                                <p class="mt-2 text-xs text-gray-500">
+                                    This visualization shows how your note compares to genuine and counterfeit samples in our AI's embedding space.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <div class="flex justify-between">
+                            <button id="check-another-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <i data-feather="arrow-left" class="mr-2"></i>
+                                Check Another Note
+                            </button>
+                            <button id="share-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <i data-feather="share-2" class="mr-2"></i>
+                                Share Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div id="about" class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-green-600 font-semibold tracking-wide uppercase">Technology</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    How We Detect Counterfeits
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    Advanced AI technology for secure currency verification.
+                </p>
+            </div>
+
+            <div class="mt-10">
+                <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
+                    <div class="relative" data-aos="fade-up">
+                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                            <i data-feather="cpu"></i>
+                        </div>
+                        <div class="ml-16">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Contrastive Learning</h3>
+                            <p class="mt-2 text-base text-gray-600">
+                                Our system uses contrastive learning (SimCLR) to create meaningful embeddings of banknotes. This allows us to compare new notes against a database of verified genuine notes.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="relative" data-aos="fade-up" data-aos-delay="100">
+                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                            <i data-feather="layers"></i>
+                        </div>
+                        <div class="ml-16">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Visual Similarity</h3>
+                            <p class="mt-2 text-base text-gray-600">
+                                The model analyzes visual features like security threads, watermarks, and microprinting to calculate a similarity score between the uploaded note and genuine samples.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="relative" data-aos="fade-up" data-aos-delay="200">
+                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                            <i data-feather="database"></i>
+                        </div>
+                        <div class="ml-16">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Reference Database</h3>
+                            <p class="mt-2 text-base text-gray-600">
+                                We maintain an extensive database of genuine Naira notes (₦200, ₦500, ₦1000) from various print batches to account for normal variations in legitimate currency.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="relative" data-aos="fade-up" data-aos-delay="300">
+                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-green-500 text-white">
+                            <i data-feather="shield"></i>
+                        </div>
+                        <div class="ml-16">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Anomaly Detection</h3>
+                            <p class="mt-2 text-base text-gray-600">
+                                Notes that fall outside the expected similarity range for genuine currency are flagged as potentially counterfeit, with visual explanations highlighting suspicious features.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <h3 class="text-lg font-medium text-gray-900">NairaNoteGuard</h3>
+                    <p class="mt-4 text-sm text-gray-500">
+                        A free service to help individuals and businesses detect counterfeit Nigerian Naira notes using advanced AI technology.
+                    </p>
+                    <div class="mt-4 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <i data-feather="twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <i data-feather="facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <i data-feather="instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Resources</h3>
+                    <div class="mt-4 space-y-4">
+                        <a href="#" class="text-base text-gray-500 hover:text-gray-900 block">How to Spot Fakes</a>
+                        <a href="#" class="text-base text-gray-500 hover:text-gray-900 block">Security Features</a>
+                        <a href="#" class="text-base text-gray-500 hover:text-gray-900 block">API Documentation</a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Legal</h3>
+                    <div class="mt-4 space-y-4">
+                        <a href="#" class="text-base text-gray-500 hover:text-gray-900 block">Privacy Policy</a>
+                        <a href="#" class="text-base text-gray-500 hover:text-gray-900 block">Terms of Use</a>
+                        <a href="#" class="text-base text-gray-500 hover:text-gray-900 block">Disclaimer</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-gray-200 pt-8">
+                <p class="text-base text-gray-400 text-center">
+                    &copy; 2023 NairaNoteGuard. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Initialize feather icons
+        feather.replace();
+
+        // Mobile menu toggle
+        document.querySelector('[aria-controls="mobile-menu"]').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // File upload handling
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-upload');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const removeFileBtn = document.getElementById('remove-file');
+        const denominationSelector = document.getElementById('denomination-selector');
+        const analyzeBtnContainer = document.getElementById('analyze-btn-container');
+        const denominationBtns = document.querySelectorAll('.denomination-btn');
+        const resultsSection = document.getElementById('results-section');
+        const uploadSection = document.getElementById('upload');
+        const checkAnotherBtn = document.getElementById('check-another-btn');
+
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropzone.classList.add('active');
+        }
+
+        function unhighlight() {
+            dropzone.classList.remove('active');
+        }
+
+        dropzone.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', handleFiles, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles({ target: { files } });
+        }
+
+        function handleFiles(e) {
+            const files = e.target.files;
+            if (files.length) {
+                const file = files[0];
+                if (file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        fileName.textContent = file.name;
+                        fileSize.textContent = formatFileSize(file.size);
+                        previewContainer.classList.remove('hidden');
+                        denominationSelector.classList.remove('hidden');
+                        analyzeBtnContainer.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please upload an image file (PNG, JPG, JPEG)');
+                }
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        removeFileBtn.addEventListener('click', function() {
+            previewImage.src = '';
+            fileInput.value = '';
+            previewContainer.classList.add('hidden');
+            denominationSelector.classList.add('hidden');
+            analyzeBtnContainer.classList.add('hidden');
+        });
+
+        // Denomination selection
+        denominationBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                denominationBtns.forEach(b => {
+                    b.classList.remove('bg-green-50', 'border-green-500', 'text-green-700');
+                    b.classList.add('border-gray-300', 'text-gray-700');
+                });
+                this.classList.remove('border-gray-300', 'text-gray-700');
+                this.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+                analyzeBtnContainer.classList.remove('hidden');
+            });
+        });
+
+        // Analyze button
+        document.getElementById('analyze-btn').addEventListener('click', function() {
+            // Simulate API call with loading state
+            this.innerHTML = '<span class="animate-spin"><i data-feather="loader"></i></span> Analyzing...';
+            feather.replace();
+            
+            setTimeout(() => {
+                // Show results
+                uploadSection.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                
+                // Set random results for demo
+                const isGenuine = Math.random() > 0.3;
+                const similarityScore = isGenuine ? Math.floor(Math.random() * 20) + 80 : Math.floor(Math.random() * 30) + 30;
+                
+                // Update results UI
+                document.getElementById('result-title').textContent = isGenuine ? 'Likely Genuine' : 'Potentially Counterfeit';
+                document.getElementById('result-subtitle').textContent = isGenuine ? 'High similarity with genuine notes' : 'Low similarity with genuine notes';
+                
+                const resultIcon = document.getElementById('result-icon');
+                resultIcon.innerHTML = isGenuine ? '<i data-feather="check-circle" class="text-green-600"></i>' : '<i data-feather="alert-circle" class="text-red-600"></i>';
+                resultIcon.className = isGenuine ? 'flex-shrink-0 h-12 w-12 rounded-full bg-green-100 flex items-center justify-center' : 'flex-shrink-0 h-12 w-12 rounded-full bg-red-100 flex items-center justify-center';
+                
+                // Update gauge
+                document.getElementById('gauge-value').textContent = similarityScore + '%';
+                document.getElementById('gauge-fill').style.transform = `rotate(${similarityScore / 100}turn)`;
+                
+                // Set result image
+                document.getElementById('result-image').src = previewImage.src;
+                
+                // Create embedding visualization
+                createEmbeddingChart(isGenuine, similarityScore);
+                
+                feather.replace();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 2000);
+        });
+
+        // Check another note
+        checkAnotherBtn.addEventListener('click', function() {
+            resultsSection.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+            previewImage.src = '';
+            fileInput.value = '';
+            previewContainer.classList.add('hidden');
+            denominationSelector.classList.add('hidden');
+            analyzeBtnContainer.classList.add('hidden');
+            window.scrollTo({ top: uploadSection.offsetTop, behavior: 'smooth' });
+        });
+
+        // Share button
+        document.getElementById('share-btn').addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'NairaNoteGuard Results',
+                    text: 'I just checked a Naira note with NairaNoteGuard!',
+                    url: window.location.href,
+                })
+                .catch(error => console.log('Error sharing:', error));
+            } else {
+                alert('Web Share API not supported in your browser. Copy this link to share: ' + window.location.href);
+            }
+        });
+
+        // Create embedding visualization chart
+        function createEmbeddingChart(isGenuine, score) {
+            const ctx = document.getElementById('embedding-chart').getContext('2d');
+            
+            // Generate random data points for demo
+            const genuinePoints = Array.from({ length: 50 }, () => ({
+                x: 5 + Math.random() * 4,
+                y: 5 + Math.random() * 4,
+                r: 5
+            }));
+            
+            const counterfeitPoints = Array.from({ length: 50 }, () => ({
+                x: -5 + Math.random() * 4,
+                y: -5 + Math.random() * 4,
+                r: 5
+            }));
+            
+            const userPoint = {
+                x: isGenuine ? 5 + Math.random() * 2 : -5 + Math.random() * 2,
+                y: isGenuine ? 5 + Math.random() * 2 : -5 + Math.random() * 2,
+                r: 8
+            };
+            
+            new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Genuine Notes',
+                            data: genuinePoints,
+                            backgroundColor: 'rgba(17, 135, 93, 0.7)',
+                            borderColor: 'rgba(17, 135, 93, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Counterfeit Notes',
+                            data: counterfeitPoints,
+                            backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Your Note',
+                            data: [userPoint],
+                            backgroundColor: 'rgba(59, 130, 246, 1)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Feature Dimension 1'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Feature Dimension 2'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 2) {
+                                        return `Your Note: ${score}% similarity`;
+                                    }
+                                    return context.dataset.label;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
